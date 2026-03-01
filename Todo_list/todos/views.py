@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.http import HttpResponse
 from .models import Task
 
@@ -21,5 +21,21 @@ def mark_as_undone(request,pk):
   task= Task.objects.get(pk=pk)
   task.is_completed = False
   task.save()
+  return redirect('home')
+
+def task_task(request,pk):
+  tasks=get_object_or_404(Task,pk=pk)
+  if request.method=="POST":
+    new_task=request.POST.get('task')
+    tasks.task=new_task
+    tasks.save()
+    return redirect('home')
+  else:
+    context={'tasks':tasks}
+    return render(request,'edit.html',context)
+
+def delete_task(request,pk):
+  task=get_object_or_404(Task,pk=pk)
+  task.delete()
   return redirect('home')
  
