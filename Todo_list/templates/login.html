@@ -15,6 +15,12 @@
     <form method="POST">
       {% csrf_token %}
 
+      {% if form.errors %}
+      <div class="alert alert-danger">
+        {{ form.errors }}
+      </div>
+      {% endif %}
+
       <div class="mb-3">
         <label class="form-label">Username</label>
         {{ form.username }}
@@ -28,6 +34,8 @@
       <button type="submit" class="btn btn-primary w-100">
         Login
       </button>
+      <a href="{% url 'register' %}" class="text-decoration-none d-block mt-2 text-center">Don't have an account?
+        Register</a>
     </form>
   </div>
 
