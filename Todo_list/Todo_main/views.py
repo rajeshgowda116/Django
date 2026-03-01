@@ -4,6 +4,7 @@ from .forms import RegisterForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout
 from django.http import HttpResponse
+from todos.models import Task
 
 
 def register(request):
@@ -27,11 +28,21 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('dashboard')
+            return redirect('home')
     else:
         form = AuthenticationForm()
 
     return render(request, 'login.html', {'form': form})
+
+def home(request):
+  task = Task.objects.filter(is_completed=False).order_by('-created_at')
+  completed_tasks = Task.objects.filter(is_completed=True).order_by('-created_at')
+  context = {
+    'task': task,
+    'completed_tasks': completed_tasks
+  }
+
+  return render(request, 'home.html', context)
 
 
 def logout_view(request):
@@ -39,5 +50,4 @@ def logout_view(request):
     return redirect('login')
 
 
-def dashboard(request):
-    return HttpResponse("Welcome to Dashboard 🎉")
+
