@@ -5,6 +5,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout
 from django.http import HttpResponse
 from todos.models import Task
+from django.contrib.auth.decorators import login_required
 
 
 def register(request):
@@ -33,7 +34,8 @@ def login_view(request):
         form = AuthenticationForm()
 
     return render(request, 'login.html', {'form': form})
-
+    
+@login_required
 def home(request):
   task = Task.objects.filter(is_completed=False).order_by('-created_at')
   completed_tasks = Task.objects.filter(is_completed=True).order_by('-created_at')
