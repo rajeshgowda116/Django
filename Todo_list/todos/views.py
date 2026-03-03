@@ -1,9 +1,11 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.http import HttpResponse
 from .models import Task
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
+@login_required
 def add_task(request):
   if request.method == 'POST':
     task =request.POST.get('task')
@@ -11,18 +13,21 @@ def add_task(request):
       Task.objects.create(task=task)
   return redirect('home')
 
+@login_required
 def mark_as_done(requst,pk):
   task = Task.objects.get(pk=pk)
   task.is_completed = True
   task.save()
   return redirect('home')
 
+@login_required
 def mark_as_undone(request,pk):
   task= Task.objects.get(pk=pk)
   task.is_completed = False
   task.save()
   return redirect('home')
 
+@login_required
 def task_task(request,pk):
   tasks=get_object_or_404(Task,pk=pk)
   if request.method=="POST":
@@ -34,6 +39,7 @@ def task_task(request,pk):
     context={'tasks':tasks}
     return render(request,'edit.html',context)
 
+@login_required
 def delete_task(request,pk):
   task=get_object_or_404(Task,pk=pk)
   task.delete()

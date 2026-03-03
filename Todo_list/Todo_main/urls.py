@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
+from django.contrib.auth.decorators import login_required
 from . import views
 
 
@@ -23,7 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('register/', views.register, name='register'),
     path('', views.login_view, name='login'),
-    path('home/', views.home, name='home'),
+    path('home/', login_required(views.home, login_url='login'), name='home'),
     path('logout/', views.logout_view, name='logout'),
     path('todos/', include('todos.urls'))
 ]
