@@ -43,8 +43,8 @@ def home(request):
   if not request.user.is_authenticated:
     return redirect('login')
 
-  task = Task.objects.filter(is_completed=False).order_by('-created_at')
-  completed_tasks = Task.objects.filter(is_completed=True).order_by('-created_at')
+  task = Task.objects.filter(user=request.user, is_completed=False).order_by('-created_at')
+  completed_tasks = Task.objects.filter(user=request.user, is_completed=True).order_by('-created_at')
   context = {
     'task': task,
     'completed_tasks': completed_tasks
