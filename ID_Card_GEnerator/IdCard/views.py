@@ -16,19 +16,19 @@ def register(request):
     return render(request, 'register.html',{'form':form})
 
 def login(request):
-    if request.method == 'POST':
-        form=AuthenticationForm(request, data=request.POST)
+    if request.method == "POST":
+        form = AuthenticationForm(request,request.POST)
         if form.is_valid():
-            username=form.cleaned_data.get('username')
-            password=form.cleaned_data.get('password')
-            user=auth.authenticate(username=username, password=password)
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = auth.authenticate(request, username=username, password=password)
             if user is not None:
-                login(request, user)
+                auth.login(request, user)
             return redirect('home')
-    else:
-        form=AuthenticationForm()
+  
+    form = AuthenticationForm()
 
-    return render(request, 'login.html', {'form':form})
+    return render(request, 'login.html', {'form': form})
 
 def home(request):
     
