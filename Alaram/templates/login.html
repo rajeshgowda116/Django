@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Sign In — TaskReminder{% endblock %}
+{% block title %}Sign In - TaskReminder{% endblock %}
 
 {% block content %}
 <div class="d-flex align-items-center justify-content-center" style="min-height:calc(100vh - 130px);">
@@ -9,7 +9,7 @@
       <div style="width:60px;height:60px;border-radius:16px;
                   background:linear-gradient(135deg,var(--accent),var(--accent2));
                   display:inline-flex;align-items:center;justify-content:center;
-                  font-size:1.6rem;box-shadow:0 0 30px rgba(79,138,255,.35);">🔐</div>
+                  font-size:1.2rem;box-shadow:0 0 30px rgba(79,138,255,.35);">IN</div>
       <h1 class="section-title mt-3">Welcome Back</h1>
       <p style="color:var(--muted);font-size:.9rem;margin-top:.4rem;">
         Sign in to your workspace
@@ -21,42 +21,44 @@
         {% csrf_token %}
 
         {% if form.non_field_errors %}
-          <div class="alert-custom mb-4">
-            <i class="bi bi-exclamation-circle me-2"></i>
-            {{ form.non_field_errors.0 }}
-          </div>
+          {% for error in form.non_field_errors %}
+            <div class="alert-custom mb-3">
+              <i class="bi bi-exclamation-circle me-2"></i>{{ error }}
+            </div>
+          {% endfor %}
         {% endif %}
 
         <div class="mb-3">
-          <label class="form-label">Username</label>
-          <div style="position:relative;">
-            <i class="bi bi-person" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);"></i>
-            <input type="text" name="username" class="form-control" placeholder="Enter your username"
-                   style="padding-left:36px!important;"
-                   value="{{ form.username.value|default:'' }}" autocomplete="username"/>
-          </div>
-          {% if form.username.errors %}
-            <div style="color:var(--red);font-size:.8rem;margin-top:5px;">{{ form.username.errors.0 }}</div>
-          {% endif %}
+          <label class="form-label" for="id_username">Username</label>
+          <input
+            type="text"
+            name="username"
+            id="id_username"
+            class="form-control"
+            placeholder="Enter your username"
+            value="{{ form.username.value|default:'' }}"
+            autocomplete="username"
+            required
+          />
+          {% for error in form.username.errors %}
+            <div style="color:var(--red);font-size:.8rem;margin-top:5px;">{{ error }}</div>
+          {% endfor %}
         </div>
 
         <div class="mb-4">
-          <label class="form-label">Password</label>
-          <div style="position:relative;">
-            <i class="bi bi-lock" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);"></i>
-            <input type="password" name="password" id="passwordField" class="form-control"
-                   placeholder="Enter your password"
-                   style="padding-left:36px!important;padding-right:44px!important;"
-                   autocomplete="current-password"/>
-            <button type="button" onclick="togglePwd()"
-                    style="position:absolute;right:12px;top:50%;transform:translateY(-50%);
-                           background:none;border:none;color:var(--muted);cursor:pointer;padding:0;">
-              <i class="bi bi-eye" id="eyeIcon"></i>
-            </button>
-          </div>
-          {% if form.password.errors %}
-            <div style="color:var(--red);font-size:.8rem;margin-top:5px;">{{ form.password.errors.0 }}</div>
-          {% endif %}
+          <label class="form-label" for="id_password">Password</label>
+          <input
+            type="password"
+            name="password"
+            id="id_password"
+            class="form-control"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            required
+          />
+          {% for error in form.password.errors %}
+            <div style="color:var(--red);font-size:.8rem;margin-top:5px;">{{ error }}</div>
+          {% endfor %}
         </div>
 
         <button type="submit" class="btn-primary-custom w-100">
@@ -67,27 +69,11 @@
       <div class="text-center mt-4" style="font-size:.875rem;color:var(--muted);">
         No account yet?
         <a href="{% url 'register' %}" style="color:var(--accent);font-weight:600;text-decoration:none;">
-          Create one →
+          Create one ->
         </a>
       </div>
     </div>
 
   </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-  function togglePwd() {
-    const f = document.getElementById('passwordField');
-    const i = document.getElementById('eyeIcon');
-    if (f.type === 'password') {
-      f.type = 'text';
-      i.className = 'bi bi-eye-slash';
-    } else {
-      f.type = 'password';
-      i.className = 'bi bi-eye';
-    }
-  }
-</script>
 {% endblock %}
