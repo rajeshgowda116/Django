@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — TaskReminder{% endblock %}
+
+{% block content %}
+
+<!-- Header row -->
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-5 fade-up">
+  <div>
+    <h1 class="section-title">
+      Good {% now "H" as hour %}{% if hour|add:"0" < 12 %}Morning{% elif hour|add:"0" < 18 %}Afternoon{% else %}Evening{% endif %},
+      <span>{{ user.username }}</span> 👋
+    </h1>
+    <p style="color:var(--muted);margin-top:.4rem;font-size:.95rem;">
+      You have
+      <strong style="color:var(--text);">{{ tasks|length }}</strong> task{{ tasks|length|pluralize }}
+      — <strong style="color:var(--green);">{{ completed_count }}</strong> done,
+        <strong style="color:var(--yellow);">{{ pending_count }}</strong> pending
+    </p>
+  </div>
+  <a href="{% url 'add_task' %}" class="btn-primary-custom d-flex align-items-center gap-2">
+    <i class="bi bi-plus-lg"></i> New Task
+  </a>
+</div>
+
+<!-- Stats row -->
+<div class="row g-3 mb-5 fade-up delay-1">
+  {% for stat in stats %}
+  <div class="col-6 col-lg-3">
+    <div class="glass-card p-4 h-100">
+      <div style="font-size:1.6rem;margin-bottom:.6rem;">{{ stat.icon }}</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;color:{{ stat.color }};">{{ stat.value }}</div>
+      <div style="color:var(--muted);font-size:.82rem;margin-top:.2rem;">{{ stat.label }}</div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Tasks grid -->
+{% if tasks %}
+  <div class="row g-4">
+    {% for task in tasks %}
+    <div class="col-12 col-md-6 col-xl-4 fade-up" style="animation-delay:{{ forloop.counter0|floatformat:2 }}s;">
+      <div class="glass-card h-100 p-4 d-flex flex-column" style="{% if task.completed %}opacity:.65;{% endif %}">
+
+        <!-- Top row -->
+        <div class="d-flex align-items-start justify-content-between mb-3">
+          <span class="badge-custom {% if task.completed %}badge-done{% else %}badge-pending{% endif %}">
+            {% if task.completed %}✓ Completed{% else %}⏳ Pending{% endif %}
+          </span>
+          <div class="d-flex gap-2">
+            <a href="{% url 'edit_task' task.pk %}" class="btn-icon edit" title="Edit">
+              <i class="bi bi-pencil"></i>
+            </a>
+            <a href="{% url 'delete_task' task.pk %}" class="btn-icon del" title="Delete">
+              <i class="bi bi-trash"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Title -->
+        <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;
+                   margin-bottom:.5rem;line-height:1.35;
+                   {% if task.completed %}text-decoration:line-through;color:var(--muted);{% endif %}">
+          {{ task.title }}
+        </h3>
+
+        <!-- Description -->
+        <p style="color:var(--muted);font-size:.875rem;line-height:1.6;flex:1;
+                  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
+          {{ task.description|default:"No description added." }}
+        </p>
+
+        <!-- Footer -->
+        <div class="mt-3 pt-3" style="border-top:1px solid var(--border);">
+          <div style="display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--muted);">
+            <i class="bi bi-alarm" style="color:var(--accent);"></i>
+            <span>{{ task.reminder_time|date:"M d, Y — H:i" }}</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+{% else %}
+  <!-- Empty state -->
+  <div class="text-center py-5 fade-up delay-2">
+    <div style="font-size:4rem;margin-bottom:1rem;">📭</div>
+    <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.35rem;margin-bottom:.5rem;">
+      No tasks yet
+    </h3>
+    <p style="color:var(--muted);font-size:.9rem;max-width:320px;margin:0 auto 1.8rem;">
+      Create your first task and set a reminder so you never miss anything important.
+    </p>
+    <a href="{% url 'add_task' %}" class="btn-primary-custom">
+      <i class="bi bi-plus-lg me-1"></i> Create First Task
+    </a>
+  </div>
+{% endif %}
+
+{% endblock %}
