@@ -1,4 +1,4 @@
-from django.shortcuts import redirect,render
+from django.shortcuts import redirect,render,HttpResponse 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
@@ -10,6 +10,11 @@ def register(request):
     if form.is_valid():
       form.save()
       return redirect('home')
+    else:
+      print(form.errors)
   else:
     form=RegistrationForm()
-  return
+  return render(request,'register.html',{'form':form})
+
+def home(request):
+  return HttpResponse("Hi Rajesh")
