@@ -1,10 +1,11 @@
 from django.shortcuts import redirect,render,HttpResponse 
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
 from .forms import RegistrationForm
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib import auth    
+from django.contrib import auth
+from Task.models import Task
+# Create your views here.   
 
 def register(request):
   if request.method=='POST':
@@ -35,4 +36,6 @@ def logout(request):
 
 @login_required
 def home(request):
-  return HttpResponse("Hi Rajesh")
+  tasks=Task.objects.filter(user=request.user,completed=False).order_by('-created_at')
+  return render(request,'dashboard.html',{'tasks':tasks})
+  
