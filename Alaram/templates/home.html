@@ -7,7 +7,7 @@
 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-5 fade-up">
   <div>
     <h1 class="section-title">
-      Good {% now "H" as hour %}{% if hour|add:"0" < 12 %}Morning{% elif hour|add:"0" < 18 %}Afternoon{% else %}Evening{% endif %}, <span>{{ user.username }}</span>
+      Good {{ greeting }}, <span>{{ user.username }}</span>
     </h1>
     <p style="color:var(--muted);margin-top:.4rem;font-size:.95rem;">
       You have
@@ -19,7 +19,9 @@
 
   <div class="glass-card px-4 py-3 text-center" style="min-width:220px;">
     <div style="color:var(--muted);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;">Digital Clock</div>
-    <div id="digital-clock" style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;line-height:1.1;color:var(--text);">--:--:--</div>
+    <div id="digital-clock"
+      style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;line-height:1.1;color:var(--text);">--:--:--
+    </div>
     <div id="digital-date" style="color:var(--accent);font-size:.85rem;margin-top:.3rem;">Loading...</div>
   </div>
 
@@ -34,7 +36,8 @@
   <div class="col-6 col-lg-3">
     <div class="glass-card p-4 h-100">
       <div style="font-size:1.6rem;margin-bottom:.6rem;">{{ stat.icon }}</div>
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;color:{{ stat.color }};">{{ stat.value }}</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;color:{{ stat.color }};">{{ stat.value
+        }}</div>
       <div style="color:var(--muted);font-size:.82rem;margin-top:.2rem;">{{ stat.label }}</div>
     </div>
   </div>
@@ -53,20 +56,22 @@
           {% if task.completed %}Completed{% else %}Pending{% endif %}
         </span>
         <div class="d-flex gap-2">
-          <a href="" class="btn-icon edit" title="Edit">
+          <a href="{% url 'edit_task' task.pk %}" class="btn-icon edit" title="Edit">
             <i class="bi bi-pencil"></i>
           </a>
-          <a href="" class="btn-icon del" title="Delete">
+          <a href="{% url 'delete_task' task.pk %}" class="btn-icon del" title="Delete">
             <i class="bi bi-trash"></i>
           </a>
         </div>
       </div>
 
-      <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:.5rem;line-height:1.35;{% if task.completed %}text-decoration:line-through;color:var(--muted);{% endif %}">
+      <h3
+        style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:.5rem;line-height:1.35;{% if task.completed %}text-decoration:line-through;color:var(--muted);{% endif %}">
         {{ task.title }}
       </h3>
 
-      <p style="color:var(--muted);font-size:.875rem;line-height:1.6;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
+      <p
+        style="color:var(--muted);font-size:.875rem;line-height:1.6;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
         {{ task.description|default:"No description added." }}
       </p>
 

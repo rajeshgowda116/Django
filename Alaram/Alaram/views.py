@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import RegistrationForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import auth
+from django.utils import timezone
 from Task.models import Task
 # Create your views here.   
 
@@ -36,6 +37,25 @@ def logout(request):
 
 @login_required
 def home(request):
-  tasks=Task.objects.filter(user=request.user,completed=False).order_by('-created_at')
-  return render(request,'home.html',{'tasks':tasks})
+  tasks = Task.objects.filter(user=request.user).order_by('-created_at')
+  completed_count = tasks.filter(completed=True).count()
+  pending_count = tasks.filter(completed=False).count()
+  total_count = tasks.count()
+  hour = timezone.localtime().hour
+
+  if hour < 12:
+    greeting = 'Morning'
+  elif hour < 18:
+    greeting = 'Afternoon'
+  else:
+    greeting = 'Evening'
+ 
+  context = {
+    'tasks': tasks,
+    'completed_count': completed_count,
+    'pending_count': pending_count,
+    'greeting': greeting,
+    
+  }
+  return render(request,'home.html',context)
   

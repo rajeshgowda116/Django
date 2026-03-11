@@ -521,33 +521,123 @@
 
   {% if user.is_authenticated %}
   <script>
-    // Tasks JSON injected from Django view via template tag
     const TASKS = JSON.parse('{{ tasks_json|escapejs|default:"[]" }}');
-    const fired = new Set();
+    let audioContext = null;
+    let alarmLoop = null;
+
+    function ensureAudioContext() {
+      if (!window.AudioContext && !window.webkitAudioContext) {
+        return null;
+      }
+
+      if (!audioContext) {
+        const AudioApi = window.AudioContext || window.webkitAudioContext;
+        audioContext = new AudioApi();
+      }
+
+      if (audioContext.state === 'suspended') {
+        audioContext.resume().catch(() => {});
+      }
+
+      return audioContext;
+    }
+
+    function playAlarmBurst() {
+      const ctx = ensureAudioContext();
+      if (!ctx) {
+        return;
+      }
+
+      [0, 0.22, 0.44].forEach(offset => {
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(880, ctx.currentTime + offset);
+        gainNode.gain.setValueAtTime(0.0001, ctx.currentTime + offset);
+        gainNode.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + offset + 0.02);
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + offset + 0.18);
+        oscillator.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        oscillator.start(ctx.currentTime + offset);
+        oscillator.stop(ctx.currentTime + offset + 0.2);
+      });
+    }
+
+    function startAlarmTone() {
+      stopAlarmTone();
+      playAlarmBurst();
+      alarmLoop = setInterval(playAlarmBurst, 1600);
+    }
+
+    function stopAlarmTone() {
+      if (alarmLoop) {
+        clearInterval(alarmLoop);
+        alarmLoop = null;
+      }
+    }
+
+    function requestNotificationPermission() {
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().catch(() => {});
+      }
+      ensureAudioContext();
+    }
+
+    function showBrowserNotification(task) {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Task Reminder', {
+          body: task.description ? `${task.title}: ${task.description}` : task.title,
+          tag: `task-reminder-${task.id}`,
+        });
+      }
+    }
+
+    function reminderStorageKey(task, dayKey) {
+      return `task-reminder-${dayKey}-${task.id}-${task.reminder_time}`;
+    }
+
+    function markReminderFired(task, dayKey) {
+      localStorage.setItem(reminderStorageKey(task, dayKey), '1');
+    }
+
+    function reminderAlreadyFired(task, dayKey) {
+      return localStorage.getItem(reminderStorageKey(task, dayKey)) === '1';
+    }
 
     function closeReminder() {
       document.getElementById('reminder-overlay').classList.remove('show');
+      stopAlarmTone();
+    }
+
+    function showReminder(task) {
+      document.getElementById('rem-title').textContent = task.title;
+      document.getElementById('rem-desc').textContent = task.description || 'It is time for this task.';
+      document.getElementById('reminder-overlay').classList.add('show');
+      startAlarmTone();
+      showBrowserNotification(task);
     }
 
     function checkReminders() {
       const now = new Date();
-      const pad = n => String(n).padStart(2, '0');
-      const nowStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      const pad = value => String(value).padStart(2, '0');
+      const currentTime = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      const dayKey = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
 
       TASKS.forEach(task => {
-        if (!task.completed && !fired.has(task.id)) {
-          // reminder_time format: "YYYY-MM-DD HH:MM"
-          const rt = task.reminder_time ? task.reminder_time.substring(0, 16).replace('T', ' ') : '';
-          if (rt === nowStr) {
-            fired.add(task.id);
-            document.getElementById('rem-title').textContent = task.title;
-            document.getElementById('rem-desc').textContent = task.description || 'No description provided.';
-            document.getElementById('reminder-overlay').classList.add('show');
-          }
+        if (!task.reminder_time) {
+          return;
+        }
+
+        if (task.reminder_time === currentTime && !reminderAlreadyFired(task, dayKey)) {
+          markReminderFired(task, dayKey);
+          showReminder(task);
         }
       });
     }
 
+    document.addEventListener('click', requestNotificationPermission, { once: true });
+    document.addEventListener('keydown', requestNotificationPermission, { once: true });
+    checkReminders();
     setInterval(checkReminders, 1000);
   </script>
   {% endif %}
