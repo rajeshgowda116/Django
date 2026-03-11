@@ -37,5 +37,5 @@ def logout(request):
 @login_required
 def home(request):
   tasks=Task.objects.filter(user=request.user,completed=False).order_by('-created_at')
-  return render(request,'dashboard.html',{'tasks':tasks})
+  return render(request,'home.html',{'tasks':tasks})
   

@@ -467,10 +467,10 @@
 
       {% if user.is_authenticated %}
       <div class="d-flex align-items-center gap-2 ms-auto">
-        <a href="" class="nav-pill {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+        <a href="{% url 'home' %}" class="nav-pill {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
           <i class="bi bi-grid-1x2"></i> Dashboard
         </a>
-        <a href="" class="nav-pill {% if request.resolver_match.url_name == 'add_task' %}active{% endif %}">
+        <a href="{% url 'add_task' %}" class="nav-pill {% if request.resolver_match.url_name == 'add_task' %}active{% endif %}">
           <i class="bi bi-plus-circle"></i> Add Task
         </a>
         <div class="ms-2 d-flex align-items-center gap-2">
