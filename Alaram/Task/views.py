@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from django.shortcuts import get_object_or_404, redirect, render
 from .models import Task
 from django.contrib.auth.decorators import login_required
