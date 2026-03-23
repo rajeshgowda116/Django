@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from .forms import RegistrationForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import auth 
+from django.contrib.auth.decorators import login_required
 
 
 def register(request):
@@ -29,6 +30,6 @@ def login(request):
     form=AuthenticationForm()
   return render(request, 'login.html',{'form':form})
 
-
+@login_required(login_url='login')
 def home(request):
-  return HttpResponse("Hi this is home page")
+  return render(request,'home.html')

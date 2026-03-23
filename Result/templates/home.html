@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Add Marks</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f4f4;
+      text-align: center;
+    }
+
+    form {
+      background: white;
+      padding: 20px;
+      margin: 50px auto;
+      width: 300px;
+      border-radius: 10px;
+    }
+
+    input {
+      margin: 8px;
+      padding: 8px;
+      width: 90%;
+    }
+
+    button {
+      padding: 10px;
+      background: blue;
+      color: white;
+      border: none;
+      width: 100%;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>Enter Student Marks</h2>
+
+  <form method="POST" action="/Result/add_marks/">
+    {% csrf_token %}
+
+    <input type="text" name="s1_name" placeholder="Subject 1 Name" required>
+    <input type="number" name="s1_marks" placeholder="Marks" required>
+
+    <input type="text" name="s2_name" placeholder="Subject 2 Name" required>
+    <input type="number" name="s2_marks" placeholder="Marks" required>
+
+    <input type="text" name="s3_name" placeholder="Subject 3 Name" required>
+    <input type="number" name="s3_marks" placeholder="Marks" required>
+
+    <input type="text" name="s4_name" placeholder="Subject 4 Name" required>
+    <input type="number" name="s4_marks" placeholder="Marks" required>
+
+    <button type="submit">Submit</button>
+  </form>
+
+</body>
+
+</html>
