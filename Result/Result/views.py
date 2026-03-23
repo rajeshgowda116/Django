@@ -23,7 +23,7 @@ def login(request):
       password=form.cleaned_data.get('password')
       user=auth.authenticate(username=username,password=password)
       if user is not None:
-        login(request,user)   
+        auth.login(request,user)   
       return redirect('home')
   else:
     form=AuthenticationForm()
